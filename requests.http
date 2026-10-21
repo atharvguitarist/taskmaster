@@ -1,0 +1,125 @@
+### TaskMaster API - sample requests
+### Open in VS Code with the "REST Client" extension, then click "Send Request" above each block.
+### After register/login, paste the token into @token below.
+
+@base = http://localhost:3000/api
+@token = PASTE_TOKEN_HERE
+
+### Health
+GET {{base}}/health
+
+### 1. Register
+POST {{base}}/auth/register
+Content-Type: application/json
+
+{ "name": "Alice", "email": "alice@example.com", "password": "password123" }
+
+### 2. Login
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{ "email": "alice@example.com", "password": "password123" }
+
+### 3. My profile
+GET {{base}}/users/me
+Authorization: Bearer {{token}}
+
+### 3b. Update profile
+PATCH {{base}}/users/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "bio": "Backend developer", "name": "Alice W" }
+
+### 11. Create a team (note the inviteCode in the response)
+POST {{base}}/teams
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "name": "Backend Squad", "description": "API work" }
+
+### 11b. Join a team with an invite code (use a second user's token)
+POST {{base}}/teams/join
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "inviteCode": "PASTE_CODE" }
+
+### 11c. Invite an existing user by email
+POST {{base}}/teams/1/invite
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "email": "bob@example.com" }
+
+### 4. Create a task
+POST {{base}}/tasks
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "title": "Write API docs", "description": "Document every endpoint", "dueDate": "2026-12-31", "priority": "high", "teamId": 1 }
+
+### 5. Tasks assigned to me
+GET {{base}}/tasks?assignee=me
+Authorization: Bearer {{token}}
+
+### 8. Filter by status
+GET {{base}}/tasks?status=open&sortBy=dueDate&order=asc
+Authorization: Bearer {{token}}
+
+### 9. Search
+GET {{base}}/tasks?search=docs
+Authorization: Bearer {{token}}
+
+### 7. Assign task 1 to user 2
+POST {{base}}/tasks/1/assign
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "assigneeId": 2 }
+
+### 6. Mark completed
+POST {{base}}/tasks/1/complete
+Authorization: Bearer {{token}}
+
+### 10. Add a comment
+POST {{base}}/tasks/1/comments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "content": "Started working on this" }
+
+### 10b. Upload an attachment (multipart)
+POST {{base}}/tasks/1/attachments
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=----Boundary
+
+------Boundary
+Content-Disposition: form-data; name="file"; filename="notes.txt"
+Content-Type: text/plain
+
+Hello from the attachment
+------Boundary--
+
+### Task detail (includes comments + attachments)
+GET {{base}}/tasks/1
+Authorization: Bearer {{token}}
+
+### 13. Notifications
+GET {{base}}/notifications?unread=true
+Authorization: Bearer {{token}}
+
+### 13b. Live stream (SSE) - keeps the connection open
+GET {{base}}/notifications/stream
+Authorization: Bearer {{token}}
+
+### 14. AI description
+POST {{base}}/ai/describe
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "title": "Set up CI pipeline", "notes": "GitHub Actions, run tests on every PR" }
+
+### 12. Logout
+POST {{base}}/auth/logout
+Authorization: Bearer {{token}}
